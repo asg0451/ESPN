@@ -69,6 +69,6 @@ public class DBGui {
 	    ret += (ids.get(i)+ " " + names.get(i));
 	}
 	con.close();
-	return ret + "hi";
+	return ret;
     }
 }
