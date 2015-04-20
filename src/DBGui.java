@@ -35,7 +35,7 @@ public class DBGui {
 
     private static final String dbClassName = "com.mysql.jdbc.Driver";
     private static final String CONNECTION =
-      "jdbc:mysql://68.175.70.96:3306/testing";
+      "jdbc:mysql://68.175.70.96/testing";
 
     public static String rundb () throws Exception {
 	Class.forName(dbClassName);
