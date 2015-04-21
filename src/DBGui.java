@@ -64,11 +64,10 @@ public class DBGui {
         }
 
         String ret = "";
-
         for(int i=0; i< ids.size(); i++) {
             ret += (ids.get(i)+ " " + names.get(i));
         }
         con.close();
-        return ret+ "hi";
+        return ret;
     }
 }
