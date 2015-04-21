@@ -35,7 +35,7 @@ public class DBGui {
 
     private static final String dbClassName = "com.mysql.jdbc.Driver";
     private static final String CONNECTION =
-      "jdbc:mysql://68.175.70.96/testing";
+      "jdbc:mysql://68.175.70.96/ESPN";
 
     public static String rundb () throws Exception {
         Class.forName(dbClassName);
@@ -47,7 +47,7 @@ public class DBGui {
         Connection con = DriverManager.getConnection(CONNECTION,p);
 
         Statement stmt = null;
-        String query = "select * from employees;";
+        String query = "select * from Player;";
 
         stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery(query);
@@ -56,16 +56,16 @@ public class DBGui {
         ArrayList<String> names = new ArrayList<String>();
 
         while (rs.next()) {
-            String name = rs.getString("first_name") + " " +
-                rs.getString("last_name");
-            int id = rs.getInt("id");
+            String name = rs.getString("player_name") + ", " +
+                rs.getString("email");
+            int id = rs.getInt("team_id");
             ids.add(id);
             names.add(name);
         }
 
         String ret = "";
         for(int i=0; i< ids.size(); i++) {
-            ret += (ids.get(i)+ " " + names.get(i));
+            ret += (ids.get(i)+ " " + names.get(i)) + "; ";
         }
         con.close();
         return ret;

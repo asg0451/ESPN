@@ -11,7 +11,7 @@ player_role VARCHAR(64),
 email       VARCHAR(64),
 kdr         float, -- null -> no kills or deaths?
 PRIMARY KEY (player_name)
-)
+);
 
 create table Team (
 team_id int,
@@ -19,7 +19,7 @@ name VARCHAR(64) NOT NULL,
 rank int,
 win_loss_ratio float,
 PRIMARY KEY (team_id)
-)
+);
 
 create table Game ( -- match is a keyword
 game_number int,
@@ -29,7 +29,7 @@ team1_id int,
 team2_id int,
 length int NOT NULL,
 PRIMARY KEY (game_number)
-)
+);
 
 create table Tournament (
 tournament_name VARCHAR(64),
@@ -37,7 +37,7 @@ tournament_year YEAR,
 winning_team_id int,
 country VARCHAR(64) NOT NULL,
 PRIMARY KEY (tournament_name, tournament_year)
-)
+);
 
 create table PlayerMatchStat (
 player_name VARCHAR(64),
@@ -48,4 +48,4 @@ deaths int,
 assists int,
 creep_score int,
 PRIMARY KEY (player_name, game_number)
-)
+);
