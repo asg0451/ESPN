@@ -8,10 +8,9 @@ public class DBGui {
 
     private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame frame = new JFrame("HelloWorldSwing");
+        JFrame frame = new JFrame("Database Results");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Add the ubiquitous "Hello World" label.
         JLabel label;
         try {
             label = new JLabel(rundb());
@@ -47,25 +46,19 @@ public class DBGui {
         Connection con = DriverManager.getConnection(CONNECTION,p);
 
         Statement stmt = null;
-        String query = "select * from Player;";
+        String query = "select * from Player P, Team T where P.team_id = T.team_id;";
 
         stmt = con.createStatement();
         ResultSet rs = stmt.executeQuery(query);
 
-        ArrayList<Integer> ids = new ArrayList<Integer>();
-        ArrayList<String> names = new ArrayList<String>();
-
+        String ret = "";
+        
         while (rs.next()) {
             String name = rs.getString("player_name") + ", " +
                 rs.getString("email");
-            int id = rs.getInt("team_id");
-            ids.add(id);
-            names.add(name);
-        }
-
-        String ret = "";
-        for(int i=0; i< ids.size(); i++) {
-            ret += (ids.get(i)+ " " + names.get(i)) + "; ";
+            int tid = rs.getInt("team_id");
+            String tname = rs.getString("T.name");
+            ret += "Team " + tid + " (" + tname + " ) " + name; 
         }
         con.close();
         return ret;
