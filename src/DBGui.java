@@ -13,6 +13,10 @@ public class DBGui {
 	private static JTextField t_info_id;
 	private static JTextArea t_info_res;
 	
+	private static JButton p_info_btn;
+	private static JTextField p_info_name;
+	private static JTextArea p_info_res;
+	
     private static void createAndShowGUI() {
         //Create and set up the window.
         JFrame frame = new JFrame("Database Results");
@@ -26,16 +30,13 @@ public class DBGui {
         frame.setVisible(true);
     }
     public static void addComponentsToPane(Container contentPane) {
-//        Any number of rows and 4 columns
         contentPane.setLayout(new GridLayout(0,4));
-
-        contentPane.add(new JLabel("Team Info"));
-        
-        t_info_id = new JTextField();
-        
+        //////Team Info row
+        contentPane.add(new JLabel("Team Info. Please enter team id."));
+        t_info_id = new JTextField();  // enter the id
         contentPane.add(t_info_id);
 
-        t_info_btn = new JButton("JButton 2");
+        t_info_btn = new JButton("Search Database");
         t_info_btn.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
@@ -45,9 +46,26 @@ public class DBGui {
         	}
         });
         contentPane.add(t_info_btn);
-        
         t_info_res = new JTextArea(2,42);
         contentPane.add(t_info_res);
+        
+        //////Player Info row
+        contentPane.add(new JLabel("Player Info. Please enter Player Name."));
+        p_info_name = new JTextField();  // enter the id
+        contentPane.add(p_info_name);
+
+        p_info_btn = new JButton("Search Database");
+        p_info_btn.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		try {
+        			p_info_res.setText(playerInfo(p_info_name.getText()));
+        		} catch (Exception e1) {}
+        	}
+        });
+        contentPane.add(p_info_btn);
+        p_info_res = new JTextArea(2,42);
+        contentPane.add(p_info_res);
         
     }
     public static void main(String[] args) {
@@ -77,7 +95,7 @@ public class DBGui {
         while (rs.next())
              ret = rs.getString("team_id")+ " (" + rs.getString("name") + "), " +
             		 rs.getInt("rank");
-        ret +="; ";
+        ret +="\n";
         
         String players =
         		"select * from Player P, Team T where T.team_id = ? and P.team_id = T.team_id;";
@@ -86,7 +104,7 @@ public class DBGui {
         
         ResultSet rs2 = pstmt_pinfo.executeQuery();
         while (rs2.next())
-             ret += rs2.getString("player_name") + ", " + rs2.getString("player_role") +
+             ret += "\t" +rs2.getString("player_name") + ", " + rs2.getString("player_role") +
              			", " + rs2.getFloat("kdr") + " \n";
              
         con.close();
