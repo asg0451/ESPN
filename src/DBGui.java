@@ -1,25 +1,55 @@
 import java.sql.*;
 import java.util.Properties;
-import java.util.ArrayList;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
 public class DBGui {
-
+	private static final String dbClassName = "com.mysql.jdbc.Driver";
+	private static final String CONNECTION = "jdbc:mysql://68.175.70.96/ESPN";
+	
+	private static JButton t_info_btn;
+	private static JTextField t_info_id;
+	private static JTextArea t_info_res;
+	
     private static void createAndShowGUI() {
         //Create and set up the window.
         JFrame frame = new JFrame("Database Results");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel label;
         try {
-            label = new JLabel(teamStats(42));
-        } catch (Exception e) { label  = new JLabel(e.toString());}
-        frame.getContentPane().add(label);
+        	addComponentsToPane(frame.getContentPane());
+        } catch (Exception e) { frame.getContentPane().add(new JLabel(e.toString())); }
+        //frame.getContentPane().add(label);
         //Display the window.
         frame.pack();
         frame.setVisible(true);
     }
+    public static void addComponentsToPane(Container contentPane) {
+//        Any number of rows and 4 columns
+        contentPane.setLayout(new GridLayout(0,4));
 
+        contentPane.add(new JLabel("Team Info"));
+        
+        t_info_id = new JTextField();
+        
+        contentPane.add(t_info_id);
+
+        t_info_btn = new JButton("JButton 2");
+        t_info_btn.addActionListener(new ActionListener() {
+        	@Override
+        	public void actionPerformed(ActionEvent e) {
+        		try {
+        			t_info_res.setText(teamStats(Integer.parseInt(t_info_id.getText())));        			
+        		} catch (Exception e1) {}
+        	}
+        });
+        contentPane.add(t_info_btn);
+        
+        t_info_res = new JTextArea(2,42);
+        contentPane.add(t_info_res);
+        
+    }
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -30,9 +60,7 @@ public class DBGui {
         });
     }
 
-    private static final String dbClassName = "com.mysql.jdbc.Driver";
-    private static final String CONNECTION =
-      "jdbc:mysql://68.175.70.96/ESPN";
+  
     public static String teamStats(int id) throws Exception {
         Class.forName(dbClassName);
         Properties p = new Properties();
