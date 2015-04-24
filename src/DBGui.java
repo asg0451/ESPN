@@ -16,6 +16,10 @@ public class DBGui {
 	private static JButton p_info_btn;
 	private static JTextField p_info_name;
 	private static JTextArea p_info_res;
+
+	private static JButton tournament_info_btn;
+	private static JTextField tournament_info_name;
+	private static JTextArea tournament_info_res; 
 	
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
@@ -72,6 +76,22 @@ public class DBGui {
         contentPane.add(p_info_btn);
         p_info_res = new JTextArea(2,42);
         contentPane.add(p_info_res);
+        //////Tournament Info row
+        contentPane.add(new JLabel("Tournament Info. Please enter Tournament Name."));
+        tournament_info_name = new JTextField();  // enter the id
+        contentPane.add(tournament_info_name);
+
+        tournament_info_btn = new JButton("Search Database");
+        tournament_info_btn.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		try {
+        			tournament_info_res.setText(tournamentInfo(tournament_info_name.getText()));
+        		} catch (Exception ex) {}
+        	}
+        });
+        contentPane.add(tournament_info_btn);
+        tournament_info_res = new JTextArea(2,42);
+        contentPane.add(tournament_info_res);
         
     }
     
@@ -129,4 +149,27 @@ public class DBGui {
         con.close();
         return ret;
     }
+
+	public static String tournamentInfo(String tournamentName) throws Exception{
+        Class.forName(dbClassName);
+        Properties p = new Properties();
+        p.put("user","miles");
+        p.put("password","ESPN");
+        Connection con = DriverManager.getConnection(CONNECTION,p);
+
+        String query = "select * from Tournament T where T.tournament_name = ?;";
+        PreparedStatement pstmt = con.prepareStatement(query);
+        pstmt.setString(1,tournamentName);
+        
+        ResultSet rs = pstmt.executeQuery();
+        String ret = "";
+        while (rs.next()) {
+             ret += "Tournament Name: " + rs.getString("tournament_name") + "\n Year: " +
+                rs.getString("tournament_year") + "\n Winning Team ID: " + rs.getInt("winning_team_id") + 
+                	"\n Held in: " + rs.getString("country");
+        }
+        con.close();
+        return ret;
+		
+	}
 }
