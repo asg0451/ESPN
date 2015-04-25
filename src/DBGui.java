@@ -21,6 +21,11 @@ public class DBGui {
 	private static JTextField tournament_info_name;
 	private static JTextArea tournament_info_res; 
 	
+	private static JButton m_info_btn;
+	private static JTextField m_info_name;
+	private static JTextArea m_info_res; 
+	
+	
     public static void main(String[] args) {
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
@@ -93,6 +98,22 @@ public class DBGui {
         tournament_info_res = new JTextArea(2,42);
         contentPane.add(tournament_info_res);
         
+        //////Match Info row
+        contentPane.add(new JLabel("Match Info. Please enter Match ID."));
+        m_info_name = new JTextField();  // enter the id
+        contentPane.add(m_info_name);
+
+        m_info_btn = new JButton("Search Database");
+        m_info_btn.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		try {
+        			m_info_res.setText(matchInfo(Integer.parseInt(m_info_name.getText())));
+        		} catch (Exception ex) {}
+        	}
+        });
+        contentPane.add(m_info_btn);
+        m_info_res = new JTextArea(2,42);
+        contentPane.add(m_info_res);
     }
     
     public static String teamStats(int id) throws Exception {
@@ -168,6 +189,66 @@ public class DBGui {
                 rs.getString("tournament_year") + "\n Winning Team ID: " + rs.getInt("winning_team_id") + 
                 	"\n Held in: " + rs.getString("country");
         }
+        con.close();
+        return ret;
+		
+	}
+	
+
+	public static String matchInfo(int matchID) throws Exception{
+        Class.forName(dbClassName);
+        Properties p = new Properties();
+        p.put("user","miles");
+        p.put("password","ESPN");
+        Connection con = DriverManager.getConnection(CONNECTION,p);
+
+        String query = "select * from Game G where G.game_number = ?;";
+        PreparedStatement pstmt = con.prepareStatement(query);
+        pstmt.setInt(1,matchID);
+
+        ResultSet rs = pstmt.executeQuery();
+        
+        String ret = "";
+        
+        rs.next();
+        //just some things to make later string-making and querying simpler
+        int winner = rs.getInt("winning_team_id");
+        int team1 =  rs.getInt("team1_id");
+        int team2 =  rs.getInt("team2_id");
+            
+        ret += "\nMatch Number: " + rs.getString("game_number") + "\n Match Length: " + rs.getInt("length") + "\n In Tournament: " +
+        rs.getString("tournament_name");
+
+        //look for the winner
+        String query2 = "select * from Team T where T.team_id = ?;";
+        PreparedStatement pstmt2 = con.prepareStatement(query2);
+        pstmt2.setInt(1,winner);
+        
+        ResultSet rs2 = pstmt2.executeQuery();
+        rs2.next();
+        
+        ret += "\n Winning Team: " + rs2.getString("name") + " ( Team ID: " + winner + " )";
+        
+        //look for team 1
+        String query3 = "select name from Team T where T.team_id = ?;";
+        PreparedStatement pstmt3 = con.prepareStatement(query3);
+        pstmt3.setInt(1,team1);
+        
+        ResultSet rs3 = pstmt3.executeQuery();
+        rs3.next();
+        
+        ret += "\n Team 1: " + rs3.getString("name") + " ( Team ID: " + team1 + " )";
+
+        //look for team 2
+        String query4 = "select name from Team T where T.team_id = ?;";
+        PreparedStatement pstmt4 = con.prepareStatement(query4);
+        pstmt4.setInt(1,team2);
+        
+        ResultSet rs4 = pstmt4.executeQuery();
+        rs4.next();
+        
+        ret += "\n Team 2: " + rs4.getString("name") + " ( Team ID: " + team2 + " )";;
+
         con.close();
         return ret;
 		
