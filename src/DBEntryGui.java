@@ -76,7 +76,7 @@ public class DBEntryGui {
 		Connection con = DriverManager.getConnection(CONNECTION,p);
 
 		//find highest game number
-		String numquery = "select MAX(game_number) from Game;";
+		String numquery = "select MAX(game_number) as max from Game;";
 		PreparedStatement numquery_stmt = con.prepareStatement(numquery);
 		//pstmt_tinfo.setInt(1,id);
 		ResultSet rs = numquery_stmt.executeQuery();
@@ -115,7 +115,7 @@ public class DBEntryGui {
 		while(rsp2.next())
 			p2.add(rsp2.getString(1));
 
-		//add pms's
+		//add pms's, one team at a time.
 		for(String pname : p1) {
 			PreparedStatement pmsadd = con.prepareStatement("insert into PlayerMatchStat values (?,?,?,?,?,?,?)");
 			pmsadd.setString(1, pname);

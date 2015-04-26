@@ -2,6 +2,7 @@ import java.sql.*;
 import java.util.Properties;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -24,9 +25,6 @@ public class DBGui {
 	private static JButton tournament_info_btn;
 	private static JTextField tournament_info_name;
 	private static JTextArea tournament_info_res;
-
-	private static String[] tournament_game_info;
-	private static JComboBox dropdown;
 
 	private static JButton pms_info_btn;
 	private static JTextField pms_info_pname;
@@ -141,28 +139,29 @@ public class DBGui {
 					results.setVisible(true);
 					Container result_con = results.getContentPane();
 					tournament_info_res = new JTextArea();
-					tournament_info_res.setText(tournamentInfo(tournament_info_name.getText()));
+					tournament_info_res.setText(tournamentInfo(tournament_info_name.getText()) + "\n" + tournamentGameInfo(tournament_info_name.getText()) );
 					tournament_info_res.setEditable(false);
 					result_con.add(tournament_info_res);
-					tournament_game_info = tournamentGameInfo(tournament_info_name.getText());
-					for (int i = 0; i < tournament_game_info.length; i++) {
-						dropdown.addItem(tournament_game_info[i]);
-					}
-					dropdown.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							JFrame tgame = new JFrame("Search Results");
-							tgame.setVisible(true);
-							Container tgame_results = tgame.getContentPane();
-							try {
-								g_info_res.setText(matchInfo(Integer.parseInt(dropdown.getSelectedItem().toString())));
-							} catch (Exception ex) {}
-							tgame_results.add(g_info_res);
-							tgame.pack();
-						}
-					});
-					result_con.add(dropdown);
+					
+//					tournament_game_info = ; //tournamentGameInfo(tournament_info_name.getText());
+//					for (int i = 0; i < tournament_game_info.length; i++) {
+//						dropdown.addItem(tournament_game_info[i]);
+//					}
+//					dropdown.addActionListener(new ActionListener() {
+//						public void actionPerformed(ActionEvent e) {
+//							JFrame tgame = new JFrame("Search Results");
+//							tgame.setVisible(true);
+//							Container tgame_results = tgame.getContentPane();
+//							try {
+//								g_info_res.setText(matchInfo(Integer.parseInt(dropdown.getSelectedItem().toString())));
+//							} catch (Exception ex) {}
+//							tgame_results.add(g_info_res);
+//							tgame.pack();
+//						}
+//					});
+//					result_con.add(dropdown);
 					results.pack();
-				} catch (Exception ex) {}
+				} catch (Exception ex) {System.err.println(e.toString());}
 			}
 		});
 		contentPane.add(new JLabel("")); // dummy
@@ -265,13 +264,13 @@ public class DBGui {
 		while (rs.next()) {
 			ret += "Tournament Name: " + rs.getString("tournament_name") + "\n Year: " +
 					rs.getString("tournament_year") + "\n Winning Team ID: " + rs.getInt("winning_team_id") +
-					"\n Held in: " + rs.getString("country");
+					"\n Held in: " + rs.getString("country") + "\n";
 		}
 		con.close();
 		return ret;
 	}
 
-	public static String[] tournamentGameInfo(String tournamentName) throws Exception {
+	public static String tournamentGameInfo(String tournamentName) throws Exception {
 		Class.forName(dbClassName);
 		Properties p = new Properties();
 		p.put("user","miles");
@@ -279,23 +278,21 @@ public class DBGui {
 		Connection con = DriverManager.getConnection(CONNECTION,p);
 
 
-		String query = "select game_number from Game M, Tournament T where G.tournament_name = T.tournament_name and G.tournament_name = ?;";
+		String query = "select G.game_number, G.winning_team_id, G.team1_id, G.team2_id from Game G, Tournament T where G.tournament_name = T.tournament_name and G.tournament_name = ?;";
 		PreparedStatement pstmt = con.prepareStatement(query);
 		pstmt.setString(1,tournamentName);
 
 		ResultSet rs = pstmt.executeQuery();
-		String[] tournament_games = new String[rs.getFetchSize()];
-		int i = 0;
+		String ret = "Games in Tournament: \n";
 		while (rs.next()){
-			tournament_games[i] = rs.getString("G.game_number");
-			i = i + 1;
+			ret += "Game Number: " + rs.getInt("G.game_number") + "\n Teams: " + rs.getInt("G.team1_id") + " vs. " +
+				rs.getInt("G.team2_id") + "\n Match Winner: " + rs.getInt("G.winning_team_id") + "\n\n";
 		}
-		System.out.println(tournament_games.toString());
-		return tournament_games;
+		con.close();
+		return ret;
 
 
 	}
-
 	public static String matchInfo(int matchID) throws Exception{
 		Class.forName(dbClassName);
 		Properties p = new Properties();
