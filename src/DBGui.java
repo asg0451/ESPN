@@ -139,7 +139,7 @@ public class DBGui {
 					results.setVisible(true);
 					Container result_con = results.getContentPane();
 					tournament_info_res = new JTextArea();
-					tournament_info_res.setText(tournamentInfo(tournament_info_name.getText()) + "\n" + tournamentGameInfo(tournament_info_name.getText()) );
+					tournament_info_res.setText(tournamentInfo(tournament_info_name.getText()) + "\n" );//+ tournamentGameInfo(tournament_info_name.getText()) );
 					tournament_info_res.setEditable(false);
 					result_con.add(tournament_info_res);
 					
@@ -249,21 +249,21 @@ public class DBGui {
 	}
 
 	public static String tournamentInfo(String tournamentName) throws Exception{
+		System.out.println(tournamentName);
 		Class.forName(dbClassName);
 		Properties p = new Properties();
 		p.put("user","miles");
 		p.put("password","ESPN");
 		Connection con = DriverManager.getConnection(CONNECTION,p);
 
-		String query = "select * from Tournament T where T.tournament_name = ?;";
+		String query = "select * from Tournament where tournament_name = ?;";
 		PreparedStatement pstmt = con.prepareStatement(query);
 		pstmt.setString(1,tournamentName);
 
 		ResultSet rs = pstmt.executeQuery();
 		String ret = "";
 		while (rs.next()) {
-			ret += "Tournament Name: " + rs.getString("tournament_name") + "\n Year: " +
-					rs.getString("tournament_year") + "\n Winning Team ID: " + rs.getInt("winning_team_id") +
+			ret += "Tournament Name: " + rs.getString("tournament_name") + "\n Winning Team ID: " + rs.getInt("winning_team_id") +
 					"\n Held in: " + rs.getString("country") + "\n";
 		}
 		con.close();
